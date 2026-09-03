@@ -141,7 +141,7 @@ def query_result(query):
 
     context = "\n\n".join(context_parts)
 
-    prompt = f"""Answer the question using only the context below. Do not mention sources, citations, or file names in your answer — just answer the question in plain prose. The sources are tracked separately and shown to the user elsewhere.
+    prompt = f"""Answer the question using only the context below. Do not mention sources, citations, or file names in your answer, just answer the question in plain prose. The sources are tracked separately and shown to the user elsewhere.
 
 Context:
 {context}
