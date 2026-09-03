@@ -6,3 +6,5 @@ venv/
 chroma_db/
 .streamlit/
 cache.json
+.claude/
+SESSION_SUMMARY.md
