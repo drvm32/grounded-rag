@@ -1,0 +1,61 @@
+DynamoDB read operations allow you to retrieve one or more items from a table by specifying the partition key value and, optionally, the sort key value. Using DynamoDB write operations, you can insert, update, or delete items in a table. This topic explains capacity unit consumption for these two operations.
+
+Topics
+Capacity unit consumption for read operations
+
+Capacity unit consumption for write operations
+
+Capacity unit consumption for read operations
+
+DynamoDB read requests can be either strongly consistent, eventually consistent, or transactional.
+
+A strongly consistent read request of an item up to 4 KB requires one read unit.
+
+An eventually consistent read request of an item up to 4 KB requires one-half read unit.
+
+A transactional read request of an item up to 4 KB requires two read units.
+
+To learn more about DynamoDB read consistency models, see DynamoDB read consistency.
+
+Item sizes for reads are rounded up to the next 4 KB multiple. For example, reading a 3,500-byte item consumes the same throughput as reading a 4 KB item.
+
+If you need to read an item that is larger than 4 KB, DynamoDB needs additional read units. The total number of read units required depends on the item size, and whether you want an eventually consistent or strongly consistent read. For example, if your item size is 8 KB, you require 2 read units to sustain one strongly consistent read. You'll require 1 read unit if you choose eventually consistent reads or 4 read units for a transactional read request.
+
+The following list describes how DynamoDB read operations consume read units:
+
+GetItem: Reads a single item from a table. To determine the number of read units that GetItem will consume, take the item size and round it up to the next 4 KB boundary. This is the number of read units required if you specified a strongly consistent read. For an eventually consistent read, which is the default, divide this number by two.
+
+For example, if you read an item that is 3.5 KB, DynamoDB rounds the item size to 4 KB. If you read an item of 10 KB, DynamoDB rounds the item size to 12 KB.
+
+BatchGetItem: Reads up to 100 items from one or more tables. DynamoDB processes each item in the batch as an individual GetItem request. DynamoDB first rounds up the size of each item to the next 4 KB boundary and then calculates the total size. The result isn't necessarily the same as the total size of all the items. For example, if BatchGetItem reads two items of sizes 1.5 KB and 6.5 KB, DynamoDB calculates the size as 12 KB (4 KB + 8 KB). DynamoDB doesn’t calculate the size as 8 KB (1.5 KB + 6.5 KB).
+
+Query: Reads multiple items that have the same partition key value. All items returned are treated as a single read operation, where DynamoDB computes the total size of all items. DynamoDB then rounds up the size to the next 4 KB boundary. For example, suppose your query returns 10 items whose combined size is 40.8 KB. DynamoDB rounds the item size for the operation to 44 KB. If a query returns 1500 items of 64 bytes each, the cumulative size is 96 KB.
+
+Scan: Reads all items in a table. DynamoDB considers the size of the items that are evaluated, not the size of the items returned by the scan. For more information about Scan operations, see Scanning tables in DynamoDB.
+
+Important
+If you perform a read operation on an item that doesn't exist, DynamoDB will still consume read throughput as outlined above. For Query/Scan operations, you'll still be charged additional read throughput based on read consistency and the number of partitions searched to serve the request, even if no data exists.
+
+For any operation that returns items, you can request a subset of attributes to retrieve. However, doing so has no impact on the item size calculations. In addition, Query and Scan can return item counts instead of attribute values. Getting the count of items uses the same quantity of read units and is subject to the same item size calculations. This is because DynamoDB has to read each item in order to increment the count.
+
+Capacity unit consumption for write operations
+
+One write unit represents one write for an item up to 1 KB in size. If you need to write an item that is larger than 1 KB, DynamoDB needs to consume additional write units. Transactional write requests require 2 write units to perform one write for items up to 1 KB. The total number of write request units required depends on the item size. For example, if your item size is 2 KB, you require 2 write units to sustain one write request or 4 write units for a transactional write request.
+
+Item sizes for writes are rounded up to the next 1 KB multiple. For example, writing a 500-byte item consumes the same throughput as writing a 1 KB item.
+
+The following list describes how DynamoDB write operations consume write units:
+
+PutItem: Writes a single item to a table. If an item with the same primary key exists in the table, the operation replaces the item. For calculating provisioned throughput consumption, the item size that matters is the larger of the two.
+
+UpdateItem: Modifies a single item in the table. DynamoDB considers the size of the item as it appears before and after the update. The provisioned throughput consumed reflects the larger of these item sizes. Even if you update a subset of the item's attributes, UpdateItem will still consume the full amount of provisioned throughput (the larger of the "before" and "after" item sizes).
+
+DeleteItem: Removes a single item from a table. The provisioned throughput consumption is based on the size of the deleted item.
+
+BatchWriteItem: Writes up to 25 items to one or more tables. DynamoDB processes each item in the batch as an individual PutItem or DeleteItem request (updates are not supported). DynamoDB first rounds up the size of each item to the next 1 KB boundary, and then calculates the total size. The result isn't necessarily the same as the total size of all the items. For example, if BatchWriteItem writes two items of sizes 500-byte and 3.5 KB, DynamoDB calculates the size as 5 KB (1 KB + 4 KB). DynamoDB doesn’t calculate the size as 4 KB (500 bytes + 3.5 KB).
+
+TransactWriteItems: Groups multiple write actions (Put, Update, Delete, and ConditionCheck) into a single all-or-nothing transaction. DynamoDB performs two underlying writes for each item — one to prepare the transaction and one to commit it — so a transactional write of an item up to 1 KB consumes two write units. This capacity is consumed even when the transaction is canceled (for example, because a condition check fails). For more information, see Capacity management for transactions.
+
+For PutItem, UpdateItem, and DeleteItem operations, DynamoDB rounds the item size up to the next 1 KB. For example, if you put or delete an item of 1.6 KB, DynamoDB rounds the item size up to 2 KB.
+
+PutItem, UpdateItem, and DeleteItem operations allow conditional writes, where you specify an expression that must evaluate to true for the operation to succeed. If the expression evaluates to false, DynamoDB still consumes write capacity units from the table. The amount of consumed write capacity units depends on the size of the item. This item can be an existing item in the table or a new one you're attempting to create or update. For example, say that an existing item is 300 KB. The new item you’re trying to create or update is 310 KB. The write capacity units consumed will be 310 KB for the new item.

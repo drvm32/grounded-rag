@@ -1,0 +1,342 @@
+You can set an Amazon S3 Lifecycle configuration on a bucket by using the Amazon S3 console, the AWS Command Line Interface (AWS CLI), the AWS SDKs, or the Amazon S3 REST API. For information about S3 Lifecycle configuration, see Managing the lifecycle of objects.
+
+Note
+To view or edit the lifecycle configuration for a directory bucket, use the AWS CLI, AWS SDKs, or the Amazon S3 REST API. For more information, see Working with S3 Lifecycle for directory buckets.
+
+In your S3 Lifecycle configuration, you use lifecycle rules to define actions that you want Amazon S3 to take during an object's lifetime. For example, you can define rules to transition objects to another storage class, archive objects, or expire (delete) objects after a specified period of time.
+
+S3 Lifecycle considerations
+
+Before you set a lifecycle configuration, note the following:
+
+Lifecycle configuration propagation delay
+When you add an S3 Lifecycle configuration to a bucket, there is usually some lag before a new or updated Lifecycle configuration is fully propagated to all the Amazon S3 systems. Expect a delay of a few minutes before the configuration fully takes effect. This delay can also occur when you delete an S3 Lifecycle configuration.
+
+Transition or expiration delay
+There's a delay between when a lifecycle rule is satisfied and when the action for the rule is completed. For example, suppose that a set of objects is expired by a lifecycle rule on January 1. Even though the expiration rule has been satisfied on January 1, Amazon S3 might not actually delete these objects until days or even weeks later. This delay occurs because S3 Lifecycle queues objects for transitions or expirations asynchronously. When you add or modify a Lifecycle rule, S3 Lifecycle may begin processing eligible objects immediately or with some delay. When S3 Lifecycle creates a delete marker or transitions an object, the timestamp is set to midnight UTC on the day the action occurred, regardless of the actual time the action was taken. However, changes in billing are usually applied when the lifecycle rule is satisfied, even if the action isn't complete. For more information, see Changes in billing. To monitor the effect of updates made by active lifecycle rules, see How do I monitor the actions taken by my lifecycle rules?
+
+Note
+When a lifecycle rule is created or modified, objects that already meet the eligibility criteria may be processed immediately.
+
+Updating, disabling, or deleting lifecycle rules
+When you disable or delete lifecycle rules, Amazon S3 stops scheduling new objects for deletion or transition after a small delay. Any objects that were already scheduled are unscheduled and are not deleted or transitioned.
+
+Note
+Before updating, disabling, or deleting lifecycle rules, use the LIST API operations (such as ListObjectsV2, ListObjectVersions, and ListMultipartUploads) or Cataloging and analyzing your data with S3 Inventory to verify that Amazon S3 has transitioned and expired eligible objects based on your use cases. If you're experiencing any issues with updating, disabling, or deleting lifecycle rules, see Troubleshooting Amazon S3 Lifecycle issues.
+
+Existing and new objects
+When you add a Lifecycle configuration to a bucket, the configuration rules apply to both existing objects and objects that you add later. For example, if you add a Lifecycle configuration rule today with an expiration action that causes objects with a specific prefix to expire 30 days after creation, Amazon S3 will queue for removal any existing objects that are more than 30 days old and that have the specified prefix.
+
+Monitoring the effect of lifecycle rules
+To monitor the effect of updates made by active lifecycle rules, see How do I monitor the actions taken by my lifecycle rules?
+
+Changes in billing
+There might be a lag between when the Lifecycle configuration rules are satisfied and when the action triggered by satisfying the rule is taken. However, changes in billing happen as soon as the Lifecycle configuration rule is satisfied, even if the action isn't yet taken.
+
+For example, after the object expiration time, you aren't charged for storage, even if the object isn't deleted immediately. Likewise, as soon as the object transition time elapses, you're charged S3 Glacier Flexible Retrieval storage rates, even if the object isn't immediately transitioned to the S3 Glacier Flexible Retrieval storage class.
+
+However, lifecycle transitions to the S3 Intelligent-Tiering storage class are the exception. Changes in billing don't happen until after the object has transitioned into the S3 Intelligent-Tiering storage class.
+
+For transitions to S3 Glacier Flexible Retrieval and S3 Glacier Deep Archive, the per-object storage overhead (40 KB per object) and minimum storage duration charges (90 days for S3 Glacier Flexible Retrieval, 180 days for S3 Glacier Deep Archive) also begin when the lifecycle rule is satisfied, regardless of when the physical transition occurs. For more information about Glacier storage overhead, see Cost considerations.
+
+Multiple or conflicting rules
+When you have multiple rules in an S3 Lifecycle configuration, an object can become eligible for multiple S3 Lifecycle actions on the same day. In such cases, Amazon S3 follows these general rules:
+
+Permanent deletion takes precedence over transition.
+
+Transition takes precedence over creation of delete markers.
+
+When an object is eligible for both an S3 Glacier Flexible Retrieval and an S3 Standard-IA (or an S3 One Zone-IA) transition, Amazon S3 chooses the S3 Glacier Flexible Retrieval transition.
+
+For examples, see Examples of overlapping filters and conflicting lifecycle actions.
+
+How to set an S3 Lifecycle configuration
+
+You can set an Amazon S3 Lifecycle configuration on a general purpose bucket by using the Amazon S3 console, the AWS Command Line Interface (AWS CLI), the AWS SDKs, or the Amazon S3 REST API.
+
+For information about AWS CloudFormation templates and examples, see Working with AWS CloudFormation templates and AWS::S3::Bucket in the CloudFormation User Guide.
+
+Using the S3 console
+You can define lifecycle rules for all objects or a subset of objects in a bucket by using a shared prefix (objects names that begin with a common string) or a tag. In your lifecycle rule, you can define actions specific to current and noncurrent object versions. For more information, see the following:
+
+Managing the lifecycle of objects
+
+Retaining multiple versions of objects with S3 Versioning
+
+To create a lifecycle rule
+Sign in to the AWS Management Console and open the Amazon S3 console at https://console.aws.amazon.com/s3/.
+
+In the left navigation pane, choose General purpose buckets.
+
+In the buckets list, choose the name of the bucket that you want to create a lifecycle rule for.
+
+Choose the Management tab, and choose Create lifecycle rule.
+
+In Lifecycle rule name, enter a name for your rule.
+
+The name must be unique within the bucket.
+
+Choose the scope of the lifecycle rule:
+
+To apply this lifecycle rule to all objects with a specific prefix or tag, choose Limit the scope to specific prefixes or tags.
+
+To limit the scope by prefix, in Prefix, enter the prefix.
+
+To limit the scope by tag, choose Add tag, and enter the tag key and value.
+
+For more information about object name prefixes, see Naming Amazon S3 objects. For more information about object tags, see Tagging your objects.
+
+To apply this lifecycle rule to all objects in the bucket, choose This rule applies to all objects in the bucket, and then choose I acknowledge that this rule applies to all objects in the bucket.
+
+To filter a rule by object size, you can select Specify minimum object size, Specify maximum object size, or both options.
+
+When you're specifying a value for Minimum object size or Maximum object size, the value must be larger than 0 bytes and up to 50 TB. You can specify this value in bytes, KB, MB, or GB.
+
+When you're specifying both values, the maximum object size must be larger than the minimum object size.
+
+Note
+The Minimum object size and Maximum object size filters exclude the specified values. For example, if you set a filter to expire objects that have a Minimum object size of 128 KB, objects that are exactly 128 KB don't expire. Instead, the rule applies only to objects that are greater than 128 KB in size.
+
+Under Lifecycle rule actions, choose the actions that you want your lifecycle rule to perform:
+
+Transition current versions of objects between storage classes
+
+Transition previous versions of objects between storage classes
+
+Expire current versions of objects
+
+Note
+For buckets that don't have S3 Versioning enabled, expiring current versions causes Amazon S3 to permanently delete the objects. For more information, see Lifecycle actions and bucket versioning state.
+
+Permanently delete previous versions of objects
+
+Delete expired delete markers or incomplete multipart uploads
+
+Depending on the actions that you choose, different options appear.
+
+To transition current versions of objects between storage classes, under Transition current versions of objects between storage classes, do the following:
+
+In Storage class transitions, choose the storage class to transition to. For a list of possible transitions, see Supported lifecycle transitions. You can choose from the following storage classes:
+
+S3 Standard-IA
+
+S3 Intelligent-Tiering
+
+S3 One Zone-IA
+
+S3 Glacier Instant Retrieval
+
+S3 Glacier Flexible Retrieval
+
+S3 Glacier Deep Archive
+
+In Days after object creation, enter the number of days after creation to transition the object.
+
+For more information about storage classes, see Understanding and managing Amazon S3 storage classes. You can define transitions for current or previous object versions or for both current and previous versions. Versioning enables you to keep multiple versions of an object in one bucket. For more information about versioning, see Using the S3 console.
+
+Important
+When you choose the S3 Glacier Instant Retrieval, S3 Glacier Flexible Retrieval, or Glacier Deep Archive storage class, your objects remain in Amazon S3. You cannot access them directly through the separate Amazon Glacier service. For more information, see Transitioning objects using Amazon S3 Lifecycle.
+
+To transition noncurrent versions of objects between storage classes, under Transition noncurrent versions of objects between storage classes, do the following:
+
+In Storage class transitions, choose the storage class to transition to. For a list of possible transitions, see Supported lifecycle transitions. You can choose from the following storage classes:
+
+S3 Standard-IA
+
+S3 Intelligent-Tiering
+
+S3 One Zone-IA
+
+S3 Glacier Instant Retrieval
+
+S3 Glacier Flexible Retrieval
+
+S3 Glacier Deep Archive
+
+In Days after object becomes noncurrent, enter the number of days after creation to transition the object.
+
+To expire current versions of objects, under Expire current versions of objects, in Number of days after object creation, enter the number of days.
+
+Important
+In a nonversioned bucket, the expiration action results in Amazon S3 permanently removing the object. For more information about lifecycle actions, see Elements to describe lifecycle actions.
+
+To permanently delete previous versions of objects, under Permanently delete noncurrent versions of objects, in Days after objects become noncurrent, enter the number of days. You can optionally specify the number of newer versions to retain by entering a value under Number of newer versions to retain.
+
+Under Delete expired delete markers or incomplete multipart uploads, choose Delete expired object delete markers and Delete incomplete multipart uploads. Then, enter the number of days after the multipart upload initiation that you want to end and clean up incomplete multipart uploads.
+
+For more information about multipart uploads, see Uploading and copying objects using multipart upload in Amazon S3.
+
+Choose Create rule.
+
+If the rule does not contain any errors, Amazon S3 enables it, and you can see it on the Management tab under Lifecycle rules.
+
+Using the AWS CLI
+You can use the following AWS CLI commands to manage S3 Lifecycle configurations:
+
+put-bucket-lifecycle-configuration
+
+get-bucket-lifecycle-configuration
+
+delete-bucket-lifecycle
+
+For instructions on setting up the AWS CLI, see Developing with Amazon S3 using the AWS CLI in the Amazon S3 API Reference.
+
+The Amazon S3 Lifecycle configuration is an XML file. But when you're using the AWS CLI, you cannot specify the XML format. You must specify the JSON format instead. The following are example XML lifecycle configurations and the equivalent JSON configurations that you can specify in an AWS CLIcommand.
+
+Consider the following example S3 Lifecycle configuration.
+
+Example 1
+Example
+
+XML
+
+<LifecycleConfiguration>
+    <Rule>
+        <ID>ExampleRule</ID>
+        <Filter>
+           <Prefix>documents/</Prefix>
+        </Filter>
+        <Status>Enabled</Status>
+        <Transition>        
+           <Days>365</Days>        
+           <StorageClass>GLACIER</StorageClass>
+        </Transition>    
+        <Expiration>
+             <Days>3650</Days>
+        </Expiration>
+    </Rule>
+</LifecycleConfiguration>
+
+JSON
+
+{
+    "Rules": [
+        {
+            "Filter": {
+                "Prefix": "documents/"
+            },
+            "Status": "Enabled",
+            "Transitions": [
+                {
+                    "Days": 365,
+                    "StorageClass": "GLACIER"
+                }
+            ],
+            "Expiration": {
+                "Days": 3650
+            },
+            "ID": "ExampleRule"
+        }
+    ]
+}
+Example 2
+Example
+
+XML
+
+<LifecycleConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <Rule>
+        <ID>id-1</ID>
+        <Expiration>
+            <Days>1</Days>
+        </Expiration>
+        <Filter>
+            <And>
+                <Prefix>myprefix</Prefix>
+                <Tag>
+                    <Key>mytagkey1</Key>
+                    <Value>mytagvalue1</Value>
+                </Tag>
+                <Tag>
+                    <Key>mytagkey2</Key>
+                    <Value>mytagvalue2</Value>
+                </Tag>
+            </And>
+        </Filter>
+        <Status>Enabled</Status>    
+    </Rule>
+</LifecycleConfiguration>
+
+JSON
+
+{
+    "Rules": [
+        {
+            "ID": "id-1",
+            "Filter": {
+                "And": {
+                    "Prefix": "myprefix", 
+                    "Tags": [
+                        {
+                            "Value": "mytagvalue1", 
+                            "Key": "mytagkey1"
+                        }, 
+                        {
+                            "Value": "mytagvalue2", 
+                            "Key": "mytagkey2"
+                        }
+                    ]
+                }
+            }, 
+            "Status": "Enabled", 
+            "Expiration": {
+                "Days": 1
+            }
+        }
+    ]
+}
+You can test the put-bucket-lifecycle-configuration as follows.
+
+To test the configuration
+Save the JSON Lifecycle configuration in a file (for example, lifecycle.json).
+
+Run the following AWS CLI command to set the Lifecycle configuration on your bucket. Replace the user input placeholders with your own information.
+
+
+$ aws s3api put-bucket-lifecycle-configuration  \
+--bucket amzn-s3-demo-bucket  \
+--lifecycle-configuration file://lifecycle.json 
+To verify, retrieve the S3 Lifecycle configuration by using the get-bucket-lifecycle-configuration AWS CLI command as follows:
+
+
+$ aws s3api get-bucket-lifecycle-configuration  \
+--bucket amzn-s3-demo-bucket  
+To delete the S3 Lifecycle configuration, use the delete-bucket-lifecycle AWS CLI command as follows:
+
+
+aws s3api delete-bucket-lifecycle \
+--bucket amzn-s3-demo-bucket
+Using the AWS SDKs
+
+Java
+
+.NET
+
+Ruby
+You can use the AWS SDK for Java to manage the S3 Lifecycle configuration of a bucket. For more information about managing S3 Lifecycle configuration, see Managing the lifecycle of objects.
+
+Note
+When you add an S3 Lifecycle configuration to a bucket, Amazon S3 replaces the bucket's current Lifecycle configuration, if there is one. To update a configuration, you retrieve it, make the desired changes, and then add the revised configuration to the bucket.
+
+To manage lifecycle configuration using the AWS SDK for Java, you can:
+
+Add a Lifecycle configuration to a bucket.
+
+Retrieve the Lifecycle configuration and update it by adding another rule.
+
+Add the modified Lifecycle configuration to the bucket. Amazon S3 replaces the existing configuration.
+
+Retrieve the configuration again and verify that it has the right number of rules by printing the number of rules.
+
+Delete the Lifecycle configuration and verify that it has been deleted by attempting to retrieve it again.
+
+For examples of how to set lifecycle configuration on a bucket with the AWS SDK for Java, see Set lifecycle configuration on a bucket in the Amazon S3 API Reference.
+
+Using the REST API
+The following topics in the Amazon Simple Storage Service API Reference describe the REST API operations related to S3 Lifecycle configuration:
+
+PutBucketLifecycleConfiguration
+
+GetBucketLifecycleConfiguration
+
+DeleteBucketLifecycle

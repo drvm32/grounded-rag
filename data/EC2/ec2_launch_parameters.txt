@@ -1,0 +1,302 @@
+The launch instance wizard and launch template in the Amazon EC2 console provide all the parameters for configuring an Amazon EC2 instance.
+
+Except for the key pair, the launch instance wizard provides a default value for each parameter. You can accept any or all of the defaults, or configure an instance with your own values. When creating a launch template, the parameters are optional. If you use a launch template to launch an instance, the parameters specified in the launch template override the default values in the launch instance wizard. Any parameter not specified in the launch template will default to the value provided by the launch instance wizard.
+
+The parameters are grouped in the launch instance wizard and launch template. The following descriptions are presented according to the parameter groupings in the console.
+
+Parameters for instance configuration
+Name and tags
+
+Application and OS Images (Amazon Machine Image)
+
+Instance type
+
+Key pair (login)
+
+Network settings
+
+Configure storage
+
+Advanced details
+
+Summary
+
+Name and tags
+
+The instance name is a tag, where the key is Name, and the value is the name that you specify. You can tag the instance, volumes, and network interfaces. For Spot Instances, you can tag the Spot Instance request only. For information about tags, see Tag your Amazon EC2 resources.
+
+Specifying an instance name and additional tags is optional.
+
+For Name, enter a descriptive name for the instance. If you don't specify a name, the instance can be identified by its ID, which is automatically generated when you launch the instance.
+
+To add additional tags, choose Add additional tags. Choose Add tag, and then enter a key and value, and select the resource type to tag. Choose Add tag again for each additional tag to add.
+
+You can only specify the instance name when launch an instance. You can't name the instance when you create a launch template, but you can add tags for the resources that are created when the instance is launched.
+
+Application and OS Images (Amazon Machine Image)
+
+An Amazon Machine Image (AMI) contains the information required to create an instance. For example, an AMI might contain the software that's required to act as a web server, such as Linux, Apache, and your website.
+
+You can find a suitable AMI as follows. With each option for finding an AMI, you can choose Cancel (at top right) to return to the launch instance wizard without choosing an AMI.
+
+Search bar
+To search through all available AMIs, enter a keyword in the AMI search bar and then press Enter. To select an AMI, choose Select.
+
+Recents
+The AMIs that you've recently used.
+
+Choose Recently launched or Currently in use, and then, from Amazon Machine Image (AMI), select an AMI.
+
+My AMIs
+The private AMIs that you own, or private AMIs that have been shared with you.
+
+Choose Owned by me or Shared with me, and then, from Amazon Machine Image (AMI), select an AMI.
+
+Quick Start
+AMIs are grouped by operating system (OS) to help you get started quickly.
+
+First select the OS that you need, and then, from Amazon Machine Image (AMI), select an AMI. To select an AMI that can be used under the AWS Free Tier, make sure that the AMI is marked Free tier eligible.
+
+Browse more AMIs
+Choose Browse more AMIs to browse the full AMI catalog.
+
+To search through all available AMIs, enter a keyword in the search bar and then press Enter.
+
+To find an AMI by using a Systems Manager parameter, choose the arrow button to the right of the search bar, and then choose Search by Systems Manager parameter. For more information, see Reference AMIs using Systems Manager parameters.
+
+To search by category, choose Quickstart AMIs, My AMIs, AWS Marketplace AMIs, or Community AMIs.
+
+The AWS Marketplace is an online store where you can buy software that runs on AWS, including AMIs. For more information about launching an instance from the AWS Marketplace, see Launch an Amazon EC2 instance from an AWS Marketplace AMI. In Community AMIs, you can find AMIs that AWS community members have made available for others to use. AMIs from Amazon or a verified partner are marked Verified provider.
+
+To filter the list of AMIs, select one or more check boxes under Refine results on the left of the screen. The filter options are different depending on the selected search category.
+
+Check the Root device type listed for each AMI. Notice which AMIs are the type that you need: either ebs (backed by Amazon EBS) or instance-store (backed by instance store). For more information, see Root volume type.
+
+Check the Virtualization type listed for each AMI. Notice which AMIs are the type that you need: either hvm or paravirtual. For example, some instance types require HVM. For more information about Linux virtualization types, see Virtualization types.
+
+Check the Boot mode listed for each AMI. Notice which AMIs use the boot mode that you need: either legacy-bios, uefi, or uefi-preferred. For more information, see Instance launch behavior with Amazon EC2 boot modes.
+
+Choose an AMI that meets your needs, and then choose Select.
+
+Warning when changing the AMI
+When you launch an instance, if you modify the configuration of any volumes or security groups associated with the selected AMI, and then you choose a different AMI, a window opens to warn you that some of your current settings will be changed or removed. You can review the changes to the security groups and volumes. Furthermore, you can either view which volumes will be added and deleted, or view only the volumes that will be added. This warning does not appear when creating a launch template.
+
+Instance type
+
+The instance type defines the hardware configuration and size of the instance. Larger instance types have more CPU and memory. For more information, see Amazon EC2 instance types.
+
+Instance type: Ensure that the instance type is compatible with the AMI that you've specified. For more information, see Amazon EC2 instance types.
+
+Free Tier – You can use instance types that are labeled Free tier eligible for free under the Free Tier. The specific instance types depend on when you created your AWS account.
+
+If your created your AWS account before July 15, 2025 and it's less than 12 months old, you can use Amazon EC2 under the Free Tier by selecting the t2.micro instance type, or the t3.micro instance type in Regions where t2.micro is unavailable. Be aware that when you launch a t3.micro instance, it defaults to Unlimited mode, which might incur additional charges based on CPU usage.
+
+If you created your AWS account on or after July 15, 2025, you can use t3.micro, t3.small, t4g.micro, t4g.small, c7i-flex.large, and m7i-flex.large instance types for 6 months or until your credits are used up.
+
+For more information, see Free Tier benefits before and after July 15, 2025.
+
+Compare instance types: You can compare different instance types by the following attributes: number of vCPUs, architecture, amount of memory (GiB), amount of storage (GB), storage type, and network performance.
+
+Get advice: You can get guidance and suggestions for instance types from the EC2 instance type finder. For more information, see Get recommendations from EC2 instance type finder.
+
+(Launch templates only) Advanced: To specify instance attributes and let Amazon EC2 identify the instance types with those attributes, choose Advanced, and then choose Specify instance type attributes.
+
+Number of vCPUs: Enter the minimum and maximum number of vCPUs for your compute requirements. To indicate no limits, enter a minimum of 0, and leave the maximum blank.
+
+Amount of memory (MiB): Enter the minimum and maximum amount of memory, in MiB, for your compute requirements. To indicate no limits, enter a minimum of 0, and leave the maximum blank.
+
+Expand Optional instance type attributes and choose Add attribute to express your compute requirements in more detail. For information about each attribute, see InstanceRequirementsRequest in the Amazon EC2 API Reference.
+
+Resulting instance types: You can preview the instance types that match the specified attributes. To exclude instance types, choose Add attribute, and from the Attribute list, choose Excluded instance types. From the Attribute value list, select the instance types to exclude.
+
+Key pair (login)
+
+For Key pair name, choose an existing key pair, or choose Create new key pair to create a new one. For more information, see Amazon EC2 key pairs and Amazon EC2 instances.
+
+Important
+If you choose the Proceed without key pair (Not recommended) option, you won't be able to connect to the instance unless you choose an AMI that is configured to allow users another way to log in.
+
+Network settings
+
+The network settings define the IP addresses, security groups, and network interfaces for your instances. You can use the default network settings or configure them as needed.
+
+(Launch instance wizard only) VPC: Choose an existing VPC for your instance. The default VPC for the Region is selected by default. Alternatively, you can choose a VPC that you created or that was shared with you. For more information, see Virtual private clouds for your EC2 instances.
+
+Subnet: Choose a subnet for your instance or choose Create new subnet to create a new subnet using the Amazon VPC console.
+
+You can create a subnet in any Availability Zone, Local Zone, Wavelength Zone, or Outpost Zone for the selected VPC.
+
+To launch the instance in an IPv6-only subnet, the instance must be a Nitro-based instance.
+
+(Launch instance wizard only) Auto-assign Public IP: Enable or disable auto-assignment of public IPv4 addresses. When launching instances into a default subnet, the default value is Enable. When launching instances into a nondefault subnet the default value is Disable. For more information, see Public IPv4 addresses.
+
+You can't enable this option for nondefault subnets if you add a secondary network interface. For more information, see Assign a public IPv4 address at launch.
+
+(Launch instance wizard only) Auto-assign IPv6 IP: Enable or disable auto-assignment of IPv6 addresses. For more information, see IPv6 addresses.
+
+Firewall (security groups): Choose an existing security group or create a new one. Ensure that your security group has rules that allow traffic to and from your instances. All other traffic is ignored.
+
+If you create a new security group, we automatically create an inbound rule that allows you to connect to your instance from all IP addresses over SSH (Linux instances) or RDP (Windows instances. You can remove or modify this rule as needed. You can add rules as needed. For more information, see Configure security group rules.
+
+Warning
+Rules that enable all IP addresses to access your instance over SSH or RDP are acceptable if you are briefly launching a test instance and will stop or terminate it after a short time. They are unsafe for production environments. You should authorize only a specific IP address range to access your instances.
+
+This security group is added to the primary network interface and any secondary network interfaces. You can select additional security groups for your network interfaces, but you can't remove the one that you select here.
+
+Advanced network configuration – You can configure the primary network interface as needed. To add a secondary network interface, choose Add network interface. The number of network interfaces that you can add depends on the instance type that you selected. Note that this section is available only if you choose a subnet.
+
+Device index: The device index. The primary network interface must be assigned to index 0.
+
+Network interface: The network interface. Select New interface to let Amazon EC2 create a new interface, or select an existing, available network interface. If you select an existing network interface as the primary network interface, you can't enable Auto-assign Public IP for nondefault subnets.
+
+Description: A description for the new network interface.
+
+Subnet: The subnet in which to create the new network interface. The instance is launched in the same subnet as the primary network interface.
+
+You must choose a subnet for a secondary network interface from the same Availability Zone as the subnet for the primary network interface. If you select a subnet from another VPC, the label Multi-VPC appears next to the network interface. This enables you to create multi-homed instances across VPCs with different networking and security configurations.
+
+To launch an EC2 instance into an IPv6-only subnet, you must use a Nitro-based instance. When launching an IPv6-only instance, it is possible that DHCPv6 might not immediately provide the instance with the IPv6 DNS name server. During this initial delay, the instance might not resolve public domains. You can change the configuration file and re-image your AMI so that the file has the IPv6 DNS name server address immediately on booting.
+
+Security groups: The security groups to associate with the network interface. You must choose a security group from the same VPC as the subnet for the network interface.
+
+(Launch templates only) Auto-assign public IP: Specify whether your instance receives a public IPv4 address. By default, instances in a default subnet receive a public IPv4 address and instances in a nondefault subnet do not. You can select Enable or Disable to override the subnet's default setting. For more information, see Public IPv4 addresses.
+
+Primary IP: A private IPv4 address from the range of your subnet. Leave blank to let Amazon EC2 choose a private IPv4 address for you.
+
+Secondary IP: Additional private IPv4 addresses from the range of your subnet. Choose Manually assign and enter an IPv4 address. Choose Add IP to add another IPv4 address. Alternatively, choose Automatically assign and enter a value to indicate the number of IPv4 addresses that Amazon EC2 chooses for you.
+
+(IPv6-only) IPv6 IPs: IPv6 addresses from the range of the subnet. Choose Manually assign and enter an IPv6 address. Choose Add IP to add another IPv6 address. Alternatively, choose Automatically assign and enter a value to indicate the number of IPv6 addresses that Amazon EC2 chooses for you.
+
+IPv4 Prefixes: The IPv4 prefixes for the network interface. Choose Manually assign and enter an IPv4 prefix. Alternatively, choose Automatically assign and enter a value to indicate the number of IPv4 prefixes that Amazon EC2 chooses for you.
+
+IPv6 Prefixes: The IPv6 prefixes for the network interface. Choose Manually assign and enter an IPv6 prefix. Alternatively, choose Automatically assign and enter a value to indicate the number of IPv6 prefixes that Amazon EC2 chooses for you.
+
+(Dual-stack and IPv6-only) Assign Primary IPv6 IP: If you select a dual-stack or IPv6-only subnet, assign a primary IPv6 address. This helps prevent disruptions to traffic to the instance or network interface. Enable this option if you rely on the IPv6 address not changing. You can't remove the primary IPv6 address later on. When you enable an IPv6 GUA address to be a primary IPv6, the first IPv6 GUA becomes the primary IPv6 address until the instance is terminated or the network interface is detached. If you have multiple IPv6 addresses associated with a network interface and you let Amazon EC2 assign a primary IPv6 address, the first IPv6 GUA address associated with the network interface is the primary IPv6 address.
+
+Delete on termination: Indicates whether the network interface is deleted when the instance is deleted.
+
+Interface type: The network interface type:
+
+ENA: A high-performance network interface designed to handle high throughput and packet-per-second rates for TCP/IP protocols while minimizing CPU usage. This is the default value. For more information about ENA, see Elastic Network Adapter.
+
+EFA with ENA: A network interface that supports both ENA and EFA devices for traditional TCP/IP based transport along with SRD based transport. For more information about EFA, see Elastic Fabric Adapter.
+
+EFA-only: A high-performance network interface designed to handle high throughput, low latency inter-node communication for SRD based transport while bypassing the operating system stack. EFA-only network interfaces do not support IP addresses. For more information about EFA, see Elastic Fabric Adapter.
+
+Elastic Fabric Adapter: Indicates whether the network interface is an Elastic Fabric Adapter. For more information, see Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2.
+
+Network card index: The index of the network card. The primary network interface must be assigned to network card index 0. Some instance types support multiple network cards.
+
+ENA Express: ENA Express is powered by AWS Scalable Reliable Datagram (SRD) technology. SRD technology uses a packet spraying mechanism to distribute load and avoid network congestion. Enabling ENA Express allows supported instances to communicate using SRD on top of regular TCP traffic when possible. The launch instance wizard or launch template does not include ENA Express configuration for the instance unless you select Enable or Disable from the list.
+
+ENA Express UDP: If you've enabled ENA Express, you can optionally use it for UDP traffic. The launch instance wizard or launch template does not include ENA Express configuration for the instance unless you select Enable or Disable.
+
+Configure storage
+
+The AMI you selected includes one or more volumes of storage, including the root volume. You can specify additional volumes to attach to the instance.
+
+(Launch instance wizard only) You can use the Simple or Advanced view. With the Simple view, you specify the size and type of the volume. To specify all volume parameters, choose the Advanced view (at top right of the card).
+
+By using the Advanced view, you can configure each volume as follows:
+
+Storage type: Select Amazon EBS or instance store volumes to associate with your instance. The volume types available in the list depend on the instance type that you've chosen. For more information, see Instance store temporary block storage for EC2 instances and Amazon EBS volumes.
+
+Device name: Select from the list of available device names for the volume.
+
+Snapshot: Select the snapshot from which to restore the volume. You can search for available shared and public snapshots by entering text into the Snapshot field.
+
+Size (GiB): For EBS volumes, you can specify a storage size.
+
+Volume type: For EBS volumes, select a volume type. For more information, see Amazon EBS volume types in the Amazon EBS User Guide.
+
+IOPS: If you have selected the io1, io2 , or or gp3 volume type, then you can enter the number of I/O operations per second (IOPS) that the volume can support. Required for io1, io2, and gp3 volumes. Not supported for gp2, st1, sc1, or standard volumes. If you omit this paramater for the launch template, you must specify a value for it when you launch an instance from the launch template.
+
+Delete on termination: For Amazon EBS volumes, choose Yes to delete the volume when the instance is terminated, or choose No to keep the volume. For more information, see Preserve data when an instance is terminated.
+
+Encrypted: If the instance type supports EBS encryption, you can choose Yes to enable encryption for the volume. If you have enabled encryption by default in this Region, encryption is enabled for you. For more information, see Amazon EBS encryption in the Amazon EBS User Guide.
+
+KMS key: If you selected Yes for Encrypted, then you must select a customer managed key to use to encrypt the volume. If you have enabled encryption by default in this Region, the default customer managed key is selected for you. You can select a different key or specify the ARN of any customer managed key that you created.
+
+Throughput: If you have selected the gp3 volume type, then you can enter the throughput, in MiB/s, that the volume can support.
+
+Volume initialization rate: If you have selected a snapshot, you can optionally specify the volume initialization rate, in MiB/s, at which the snapshot blocks are to be downloaded from Amazon S3 to the volume. For more information, see Use an Amazon EBS Provisioned Rate for Volume Initialization. To use the default initialization rate or fast snapshot restore (if it is enabled for the selected snapshot), don't specify a rate.
+
+File systems: Mount an Amazon EFS or Amazon FSx file system to the instance. For more information about mounting an Amazon EFS file system, see Use Amazon EFS with Amazon EC2 Linux instances. For more information about mounting an Amazon FSx file system, see Use Amazon FSx with Amazon EC2 instances
+
+Advanced details
+
+For Advanced details, expand the section to view the fields and specify any additional parameters for the instance.
+
+(Launch instance wizard only) Domain join directory: Select the Directory Service directory (domain) to which your instance is joined to after launch. If you select a domain, you must select an IAM role with the required permissions. For more information about domain joining, see Seamlessly join an Amazon EC2 Linux instance to your AWS Managed Microsoft AD directory (Linux instances) and Seamlessly join an Amazon EC2 Windows instance to your AWS Managed Microsoft AD directory (Windows instances).
+
+IAM instance profile: Select an IAM instance profile to associate with the instance. This is a container for an IAM role. For more information, see IAM roles for Amazon EC2.
+
+Hostname type: Select whether the guest OS hostname of the instance will include the resource name or the IP name. For more information, see EC2 instance hostnames and domains.
+
+DNS Hostname: Determines if the DNS queries to the resource name or the IP name (depending on what you selected for Hostname type) will respond with the IPv4 address (A record), IPv6 address (AAAA record), or both. For more information, see EC2 instance hostnames and domains.
+
+Instance auto-recovery: When enabled, recovers your instance if system status checks fail. This setting is enabled by default at launch for supported instance types. For more information, see Configure simplified automatic recovery on an Amazon EC2 instance.
+
+Shutdown behavior: Select whether the instance should stop or terminate when shut down. For more information, see Change instance initiated shutdown behavior.
+
+Stop - Hibernate behavior: To enable hibernation, choose Enable. This field is available only if your instance meets the hibernation prerequisites. For more information, see Hibernate your Amazon EC2 instance.
+
+Termination protection: To prevent accidental termination, choose Enable. For more information, see Change instance termination protection.
+
+Stop protection: To prevent accidental stopping, choose Enable. For more information, see Enable stop protection.
+
+Detailed CloudWatch monitoring: Choose Enable to turn on detailed monitoring of your instance using Amazon CloudWatch. Additional charges apply. For more information, see Monitor your instances using CloudWatch.
+
+Credit specification: Choose Unlimited to enable applications to burst beyond the baseline for as long as needed. This field is only valid for T instances. Additional charges may apply. For more information, see Burstable performance instances.
+
+Placement group: Specify a placement group in which to launch the instance. You can select an existing placement group, or create a new one. Not all instance types support launching an instance in a placement group. For more information, see Placement groups for your Amazon EC2 instances.
+
+EBS-optimized instance: An instance that's optimized for Amazon EBS uses an optimized configuration stack and provides additional, dedicated capacity for Amazon EBS I/O. If the instance type supports this feature, choose Enable to enable it. Additional charges apply. For more information, see Amazon EBS-optimized instance types.
+
+Instance bandwidth configuration: You can boost either your networking bandwidth or your EBS bandwidth. For supported instance types only. For more information, see EC2 instance bandwidth weighting configuration.
+
+Purchasing option: Choose Spot Instances to request Spot Instances at the Spot price, capped at the On-Demand price, and choose Customize Spot Instance options to change the default Spot Instance settings. You can set your maximum price (not recommended), and change the request type, request duration, and interruption behavior. If you do not request a Spot Instance, Amazon EC2 launches an On-Demand Instance by default. For more information, see Manage your Spot Instances.
+
+Capacity Reservation: Specify whether to launch the instance into any open Capacity Reservation (Open), a specific Capacity Reservation (Target by ID), or a Capacity Reservation group (Target by group). To specify that a Capacity Reservation should not be used, choose None. For more information, see Launch instances into an existing Capacity Reservation.
+
+Tenancy: Choose whether to run your instance on shared hardware (Shared), isolated, dedicated hardware (Dedicated), or on a Dedicated Host (Dedicated host). If you choose to launch the instance onto a Dedicated Host, you can specify whether to launch the instance into a host resource group or you can target a specific Dedicated Host. Additional charges may apply. For more information, see Amazon EC2 Dedicated Instances and Amazon EC2 Dedicated Hosts.
+
+RAM disk ID: (Only valid for paravirtual (PV) AMIs) Select a RAM disk for the instance. If you have selected a kernel, you might need to select a specific RAM disk with the drivers to support it.
+
+Kernel ID: (Only valid for paravirtual (PV) AMIs) Select a kernel for the instance.
+
+Nitro Enclave: Allows you to create isolated execution environments, called enclaves, from Amazon EC2 instances. Select Enable to enable the instance for AWS Nitro Enclaves. For more information, see What is AWS Nitro Enclaves? in the AWS Nitro Enclaves User Guide.
+
+License configurations: You can launch instances against the specified license configuration to track your license usage. For more information, see Create a license configuration in the AWS License Manager User Guide.
+
+Specify CPU options: In the launch instance wizard, this field is only visible if the selected instance type supports specifying CPU options. Choose Specify CPU options to specify a custom number of vCPUs during launch. Set the number of CPU cores and threads per core. For more information, see CPU options for Amazon EC2 instances.
+
+Metadata accessible: You can enable or disable access to the Instance Metadata Service (IMDS). For more information, see Configure instance metadata options for new instances.
+
+Metadata IPv6 endpoint: You can enable the instance to use the IMDS IPv6 address [fd00:ec2::254] to retrieve instance metadata. This option is only available if you are launching Nitro-based instances into an IPv6-supported subnet (dual stack or IPv6 only). For more information about retrieving instance metadata, see Access instance metadata for an EC2 instance.
+
+Metadata version: If you enable access to the IMDS, you can choose to require the use of Instance Metadata Service Version 2 when requesting instance metadata. For more information, see Configure instance metadata options for new instances.
+
+Metadata response hop limit: If you enable the IMDS, you can set the allowable number of network hops for the metadata token. For more information, see Configure instance metadata options for new instances.
+
+Allow tags in metadata: If you select Enable, the instance will allow access to all of its tags from its metadata. If no value is specified, then by default, access to the tags in instance metadata is not allowed. For more information, see Enable access to tags in instance metadata.
+
+User data: You can specify user data to configure an instance during launch, or to run a configuration script. For more information about user data for Linux instances, see Run commands when you launch an EC2 instance with user data input. For more information about user data for Windows instances, see How Amazon EC2 handles user data for Windows instances.
+
+Summary
+
+Use the Summary panel to specify the number of instances to launch, to review your instance configuration, and to launch your instances.
+
+Number of instances: Enter the number of instances to launch. All of the instances will launch with the same configuration.
+
+Tip
+To ensure faster instance launches, break up large requests into smaller batches. For example, create five separate launch requests for 100 instances each instead of one launch request for 500 instances.
+
+(Optional) If you specify more than one instance, to help ensure that you maintain the correct number of instances to handle demand on your application, you can choose consider EC2 Auto Scaling to create a launch template and an Auto Scaling group. Auto Scaling scales the number of instances in the group according to your specifications. For more information, see the Amazon EC2 Auto Scaling User Guide.
+
+Note
+If Amazon EC2 Auto Scaling marks an instance that is in an Auto Scaling group as unhealthy, the instance is automatically scheduled for replacement where it is terminated and another is launched, and you lose your data on the original instance. An instance is marked as unhealthy if you stop or reboot the instance, or if another event marks the instance as unhealthy. For more information, see Health checks for instances in an Auto Scaling group in the Amazon EC2 Auto Scaling User Guide.
+
+Review the details of your instance, and make any necessary changes. You can navigate directly to a section by choosing its link in the Summary panel.
+
+When you're ready to launch your instance, choose Launch instance.

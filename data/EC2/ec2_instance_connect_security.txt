@@ -1,0 +1,51 @@
+A security group controls the traffic that is allowed to reach and leave the resources that it is associated with. For example, we deny traffic to and from an Amazon EC2 instance unless it is specifically allowed by the security groups associated with the instance.
+
+The following examples show you how to configure the security group rules for the EC2 Instance Connect Endpoint and the target instances.
+
+Examples
+EC2 Instance Connect Endpoint security group rules
+
+Target instance security group rules
+
+EC2 Instance Connect Endpoint security group rules
+
+The security group rules for an EC2 Instance Connect Endpoint must allow outbound traffic destined for the target instances to leave the endpoint. You can specify either the instance security group or the IPv4 or IPv6 address range of the VPC as the destination.
+
+Traffic to the endpoint originates from the EC2 Instance Connect Endpoint Service, and it is allowed regardless of the inbound rules for the endpoint security group. To control who can use EC2 Instance Connect Endpoint to connect to an instance, use an IAM policy. For more information, see Permissions to use EC2 Instance Connect Endpoint to connect to instances.
+
+Example outbound rule: Security group referencing
+The following example uses security group referencing, which means that the destination is a security group associated with the target instances. This rule allows outbound traffic from the endpoint to all instances that use this security group.
+
+Protocol	Destination	Port range	Comment
+TCP	ID of instance security group	22	Allows outbound SSH traffic to all instances associated with the instance security group
+Example outbound rule: IPv4 address range
+The following example allows outbound traffic to the specified IPv4 address range. The IPv4 addresses of an instance is assigned from its subnet, so you can use the IPv4 address range of the VPC.
+
+Protocol	Destination	Port range	Comment
+TCP	VPC IPv4 CIDR	22	Allows outbound SSH traffic to the VPC
+Example outbound rule: IPv6 address range
+The following example allows outbound traffic to the specified IPv6 address range. The IPv6 addresses of an instance is assigned from its subnet, so you can use the IPv6 address range of the VPC.
+
+Protocol	Destination	Port range	Comment
+TCP	VPC IPv6 CIDR	22	Allows outbound SSH traffic to the VPC
+Target instance security group rules
+
+The security group rules for target instances must allow inbound traffic from the EC2 Instance Connect Endpoint. You can specify either the endpoint security group or an IPv4 or IPv6 address range as the source. If you specify an IPv4 address range, the source depends on whether client IP preservation is off or on. For more information, see Considerations.
+
+Because security groups are stateful, the response traffic is allowed to leave the VPC regardless of the outbound rules for the instance security group.
+
+Example inbound rule: Security group referencing
+The following example uses security group referencing, which means that the source is the security group associated with the endpoint. This rule allows inbound SSH traffic from the endpoint to all instances that use this security group, whether client IP preservation is on or off. If there are no other inbound security group rules for SSH, then the instances accept SSH traffic only from the endpoint.
+
+Protocol	Source	Port range	Comment
+TCP	ID of endpoint security group	22	Allows inbound SSH traffic from the resources associated with the endpoint security group
+Example inbound rule: Client IP preservation off
+The following example allows inbound SSH traffic from the specified IPv4 address range. Because client IP preservation is off, the source IPv4 address is the address of the endpoint network interface. The address of the endpoint network interface is assigned from its subnet, so you can use the IPv4 address range of the VPC to allow connections to all instances in the VPC.
+
+Protocol	Source	Port range	Comment
+TCP	VPC IPv4 CIDR	22	Allows inbound SSH traffic from the VPC
+Example inbound rule: Client IP preservation on
+The following example allows inbound SSH traffic from the specified IPv4 address range. Because client IP preservation is on, the source IPv4 address is the address of the client.
+
+Protocol	Source	Port range	Comment
+TCP	Public IPv4 address range	22	Allows inbound traffic from the specified client IPv4 address range

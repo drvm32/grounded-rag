@@ -1,0 +1,17 @@
+The primary key that uniquely identifies each item in an Amazon DynamoDB table can be simple (a partition key only) or composite (a partition key combined with a sort key).
+
+You should design your application for uniform activity across all partition keys in the table and its secondary indexes. You can determine the access patterns that your application requires, and read and write units that each table and secondary index requires.
+
+Note
+Adaptive capacity applies to on-demand mode and provisioned capacity.
+
+Every partition in a DynamoDB table is designed to deliver a maximum capacity of 3,000 read units per second and 1,000 write units per second. One read unit represents one strongly consistent read operation per second, or two eventually consistent read operations per second, for an item up to 4 KB in size. One write unit represents one write operation per second for an item up to 1 KB in size.
+
+You must factor in the item size when evaluating the partition throughput limits for your table. For example, if the table has an item size of 20 KB, a single consistent read operation will consume 5 read units. This means you can concurrently drive 600 consistent read operations per second on that single item before reaching the partition limits. The total throughput across all partitions in the table can be constrained by the provisioned throughput in provisioned mode, or by the table level throughput limit in on-demand mode. See Service Quotas for more information.
+
+Topics
+Designing partition keys to distribute your workload in DynamoDB
+
+Using write sharding to distribute workloads evenly in your DynamoDB table
+
+Distributing write activity efficiently during data upload in DynamoDB

@@ -1,0 +1,97 @@
+A security group controls the traffic that is allowed to reach and leave the resources that it is associated with. For example, after you associate a security group with an EC2 instance, it controls the inbound and outbound traffic for the instance.
+
+When you create a VPC, it comes with a default security group. You can create additional security groups for a VPC, each with their own inbound and outbound rules. You can specify the source, port range, and protocol for each inbound rule. You can specify the destination, port range, and protocol for each outbound rule.
+
+The following diagram shows a VPC with a subnet, an internet gateway, and a security group. The subnet contains an EC2 instance. The security group is assigned to the instance. The security group acts as a virtual firewall. The only traffic that reaches the instance is the traffic allowed by the security group rules. For example, if the security group contains a rule that allows ICMP traffic to the instance from your network, then you could ping the instance from your computer. If the security group does not contain a rule that allows SSH traffic, then you could not connect to your instance using SSH.
+
+VPC with 2 subnets, 2 security groups, servers in subnets associated with different security groups.
+
+Contents
+Security group basics
+
+Security group example
+
+Security group rules
+
+Default security groups
+
+Create a security group
+
+Configure security group rules
+
+Delete a security group
+
+Associate security groups with multiple VPCs
+
+Share security groups with AWS Organizations
+
+Pricing
+There is no additional charge for using security groups.
+
+Security group basics
+
+You can assign a security group to resources created in the same VPC as the security group or to resources in other VPCs if using the Security Group VPC Association feature to associate the security group to other VPCs in the same Region. You can also assign multiple security groups to a single resource.
+
+When you create a security group, you must provide it with a name and a description. The following rules apply:
+
+A security group name must be unique within the VPC.
+
+Security group names are not case-sensitive.
+
+Names and descriptions can be up to 255 characters in length.
+
+Names and descriptions are limited to the following characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*.
+
+When the name contains trailing spaces, we trim the space at the end of the name. For example, if you enter "Test Security Group " for the name, we store it as "Test Security Group".
+
+A security group name can't start with sg-.
+
+Security groups are stateful. For example, if you send a request from an instance, the response traffic for that request is allowed to reach the instance regardless of the inbound security group rules. Responses to allowed inbound traffic are allowed to leave the instance, regardless of the outbound rules.
+
+Security groups do not filter traffic destined to and from the following:
+
+Amazon Domain Name Services (DNS)
+
+Amazon Dynamic Host Configuration Protocol (DHCP)
+
+Amazon EC2 instance metadata
+
+Amazon ECS task metadata endpoints
+
+License activation for Windows instances
+
+Amazon Time Sync Service
+
+Reserved IP addresses used by the default VPC router
+
+There are quotas on the number of security groups that you can create per VPC, the number of rules that you can add to each security group, and the number of security groups that you can associate with a network interface.
+
+For more information, see Amazon VPC quotas.
+
+Best practices
+Authorize only specific IAM principals to create and modify security groups.
+
+Create the minimum number of security groups that you need, to decrease the risk of error. Use each security group to manage access to resources that have similar functions and security requirements.
+
+When you add inbound rules for ports 22 (SSH) or 3389 (RDP) so that you can access your EC2 instances, authorize only specific IP address ranges. If you specify 0.0.0.0/0 (IPv4) and ::/ (IPv6), this enables anyone to access your instances from any IP address using the specified protocol.
+
+Do not open large port ranges. Ensure that access through each port is restricted to the sources or destinations that require it.
+
+Consider creating network ACLs with rules similar to your security groups, to add an additional layer of security to your VPC. For more information about the differences between security groups and network ACLs, see Compare security groups and network ACLs.
+
+Security group example
+
+The following diagram shows a VPC with two security groups and two subnets. The instances in subnet A have the same connectivity requirements, so they are associated with security group 1. The instances in subnet B have the same connectivity requirements, so they are associated with security group 2. The security group rules allow traffic as follows:
+
+The first inbound rule in security group 1 allows SSH traffic to the instances in subnet A from the specified address range (for example, a range in your own network).
+
+The second inbound rule in security group 1 allows the instances in subnet A to communicate with each other using any protocol and port.
+
+The first inbound rule in security group 2 allows the instances in subnet B to communicate with each other using any protocol and port.
+
+The second inbound rule in security group 2 allows the instances in subnet A to communicate with the instances in subnet B using SSH.
+
+Both security groups use the default outbound rule, which allows all traffic.
+
+A VPC with two subnets, each associated with a different security group.
+
